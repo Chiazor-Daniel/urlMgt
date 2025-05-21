@@ -5,15 +5,17 @@ import os
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = os.getenv('SECRET_KEY', 'dev')
-# Use instance folder for database
-app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('DATABASE_URL', 'sqlite:///instance/urls.db')
+
+# Use /tmp directory for SQLite database on Render
+db_path = os.path.join('/tmp', 'urls.db')
+app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('DATABASE_URL', f'sqlite:///{db_path}')
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 db = SQLAlchemy(app)
 migrate = Migrate(app, db)
 
-# Ensure instance folder exists
-os.makedirs('instance', exist_ok=True)
+# Ensure /tmp directory exists
+os.makedirs('/tmp', exist_ok=True)
 
 class Link(db.Model):
     id = db.Column(db.Integer, primary_key=True)
