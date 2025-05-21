@@ -6,8 +6,8 @@ import os
 app = Flask(__name__)
 app.config['SECRET_KEY'] = os.getenv('SECRET_KEY', 'dev')
 
-# Use /tmp directory for SQLite database on Render
-db_path = os.path.join('/tmp', 'urls.db')
+# Use project directory for SQLite database
+db_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'urls.db')
 app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('DATABASE_URL', f'sqlite:///{db_path}')
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
