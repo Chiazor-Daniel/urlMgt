@@ -5,19 +5,24 @@ import os
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = os.getenv('SECRET_KEY', 'dev')
-app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('DATABASE_URL', 'sqlite:///urls.db')
+# Use instance folder for database
+app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('DATABASE_URL', 'sqlite:///instance/urls.db')
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 db = SQLAlchemy(app)
 migrate = Migrate(app, db)
+
+# Ensure instance folder exists
+os.makedirs('instance', exist_ok=True)
 
 class Link(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(100), unique=True, nullable=False)
     link = db.Column(db.String(2048), nullable=False)
 
-@app.route('/')
-def index():
+# Initialize database
+with app.app_context():
+    db.create_all()
     # Ensure the predefined links exist
     predefined_links = [
         {'name': 'voicemail-googleplay', 'link': 'https://play.google.com/store/apps/details?id=com.google.android.apps.googlevoice'},
@@ -31,7 +36,10 @@ def index():
             link = Link(name=link_data['name'], link=link_data['link'])
             db.session.add(link)
     db.session.commit()
-    links = Link.query.filter(Link.name.in_([l['name'] for l in predefined_links])).order_by(Link.id.desc()).all()
+
+@app.route('/')
+def index():
+    links = Link.query.order_by(Link.id.desc()).all()
     return render_template('index.html', links=links)
 
 @app.route('/edit/<int:id>', methods=['POST'])
@@ -69,4 +77,4 @@ def get_links():
     } for link in links])
 
 if __name__ == '__main__':
-    app.run(debug=True) 
+    app.run(debug=True, host='0.0.0.0') 
