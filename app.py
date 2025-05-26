@@ -27,7 +27,7 @@ class Link(db.Model):
 # Initialize database
 with app.app_context():
     db.create_all()
-    # Ensure the predefined links exist
+    # Only add predefined links if they don't exist
     predefined_links = [
         {'name': 'voicemail-googleplay', 'link': 'https://play.google.com/store/apps/details?id=com.google.android.apps.googlevoice'},
         {'name': 'voicemail-windows', 'link': 'https://www.microsoft.com/en-us/p/google-voice/9nblggh0h7c9'},
@@ -35,8 +35,8 @@ with app.app_context():
         {'name': 'optimum-windows', 'link': 'https://www.microsoft.com/en-us/p/optimum/9nblggh0h7c9'}
     ]
     for link_data in predefined_links:
-        link = Link.query.filter_by(name=link_data['name']).first()
-        if not link:
+        # Only add if the link doesn't exist
+        if not Link.query.filter_by(name=link_data['name']).first():
             link = Link(name=link_data['name'], link=link_data['link'])
             db.session.add(link)
     db.session.commit()
