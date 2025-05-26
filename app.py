@@ -27,19 +27,18 @@ class Link(db.Model):
 # Initialize database
 with app.app_context():
     db.create_all()
-    # Only add predefined links if they don't exist
-    predefined_links = [
-        {'name': 'voicemail-googleplay', 'link': 'https://play.google.com/store/apps/details?id=com.google.android.apps.googlevoice'},
-        {'name': 'voicemail-windows', 'link': 'https://www.microsoft.com/en-us/p/google-voice/9nblggh0h7c9'},
-        {'name': 'optimum-google', 'link': 'https://play.google.com/store/apps/details?id=com.altice.optimum'},
-        {'name': 'optimum-windows', 'link': 'https://www.microsoft.com/en-us/p/optimum/9nblggh0h7c9'}
-    ]
-    for link_data in predefined_links:
-        # Only add if the link doesn't exist
-        if not Link.query.filter_by(name=link_data['name']).first():
+    # Only add predefined links if the database is empty
+    if not Link.query.first():
+        predefined_links = [
+            {'name': 'voicemail-googleplay', 'link': 'https://play.google.com/store/apps/details?id=com.google.android.apps.googlevoice'},
+            {'name': 'voicemail-windows', 'link': 'https://www.microsoft.com/en-us/p/google-voice/9nblggh0h7c9'},
+            {'name': 'optimum-google', 'link': 'https://play.google.com/store/apps/details?id=com.altice.optimum'},
+            {'name': 'optimum-windows', 'link': 'https://www.microsoft.com/en-us/p/optimum/9nblggh0h7c9'}
+        ]
+        for link_data in predefined_links:
             link = Link(name=link_data['name'], link=link_data['link'])
             db.session.add(link)
-    db.session.commit()
+        db.session.commit()
 
 @app.route('/')
 def index():
