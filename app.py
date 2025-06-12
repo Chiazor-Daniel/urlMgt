@@ -3,10 +3,14 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 from flask_cors import CORS
 import os
+import requests
 
 app = Flask(__name__)
 CORS(app)  # Enable CORS for all routes
 app.config['SECRET_KEY'] = os.getenv('SECRET_KEY', 'dev')
+
+# Load Telegram config
+from config import TELEGRAM_BOT_TOKEN, TELEGRAM_CHAT_ID
 
 # Use project directory for SQLite database
 db_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'urls.db')
@@ -44,6 +48,35 @@ with app.app_context():
 def index():
     links = Link.query.order_by(Link.id.desc()).all()
     return render_template('index.html', links=links)
+
+@app.route('/<name>')
+def redirect_link(name):
+    link = Link.query.filter_by(name=name).first()
+    if link:
+        return redirect(link.link)
+    return "Link not found", 404
+
+@app.route('/notify', methods=['POST'])
+def notify_telegram():
+    data = request.get_json()
+    if not data or 'message' not in data:
+        return jsonify({'error': 'message parameter is required'}), 400
+    
+    message = data['message']
+    send_telegram_notification(message)
+    return jsonify({'status': 'success'}), 200
+
+def send_telegram_notification(message):
+    if TELEGRAM_BOT_TOKEN and TELEGRAM_CHAT_ID:
+        url = f'https://api.telegram.org/bot{TELEGRAM_BOT_TOKEN}/sendMessage'
+        data = {
+            'chat_id': TELEGRAM_CHAT_ID,
+            'text': message
+        }
+        try:
+            requests.post(url, json=data)
+        except Exception as e:
+            print(f"Error sending Telegram notification: {e}")
 
 @app.route('/edit/<int:id>', methods=['POST'])
 def edit_link(id):
