@@ -49,6 +49,19 @@ def index():
     links = Link.query.order_by(Link.id.desc()).all()
     return render_template('index.html', links=links)
 
+@app.route('/telegram/send', methods=['POST'])
+def send_telegram_message():
+    data = request.json
+    message = data.get('message')
+    if not message:
+        return jsonify({'error': 'Message is required'}), 400
+        
+    try:
+        send_telegram_notification(message)
+        return jsonify({'status': 'success', 'message': 'A user opened link'}), 200
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
 @app.route('/<name>')
 def redirect_link(name):
     link = Link.query.filter_by(name=name).first()
